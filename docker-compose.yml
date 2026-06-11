@@ -3,31 +3,12 @@ x-worker-common: &worker-common
   restart: unless-stopped
   env_file: .env
   depends_on:
-    postgres:
-      condition: service_healthy
-    redis:
+    nvpn-redis:
       condition: service_healthy
   entrypoint: ['node']
 
 services:
-  postgres:
-    image: postgres:16-alpine
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: ad_bot
-    ports:
-      - '5432:5432'
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U postgres']
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  redis:
+  nvpn-redis:
     image: redis:7-alpine
     restart: unless-stopped
     ports:
@@ -38,14 +19,12 @@ services:
       timeout: 5s
       retries: 5
 
-  app:
+  nvpn-comment-service:
     build: .
     restart: unless-stopped
     env_file: .env
     depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
+      nvpn-redis:
         condition: service_healthy
 
   worker-parser:
@@ -64,5 +43,3 @@ services:
     <<: *worker-common
     command: ['dist/workers/status.worker.js']
 
-volumes:
-  postgres_data:
