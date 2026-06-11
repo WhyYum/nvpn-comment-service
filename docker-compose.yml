@@ -1,0 +1,68 @@
+x-worker-common: &worker-common
+  build: .
+  restart: unless-stopped
+  env_file: .env
+  depends_on:
+    postgres:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+  entrypoint: ['node']
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ad_bot
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  worker-parser:
+    <<: *worker-common
+    command: ['dist/workers/parser.worker.js']
+
+  worker-sender:
+    <<: *worker-common
+    command: ['dist/workers/sender.worker.js']
+
+  worker-retry:
+    <<: *worker-common
+    command: ['dist/workers/retry.worker.js']
+
+  worker-status:
+    <<: *worker-common
+    command: ['dist/workers/status.worker.js']
+
+volumes:
+  postgres_data:

@@ -1,0 +1,176 @@
+# ============================================================
+# Все тексты интерфейса бота
+# Плейсхолдеры: %ключ% заменяются при вызове t(str, { ключ: значение })
+# ============================================================
+
+# --- Общие элементы ---
+common:
+  back: "← Назад"
+  mainMenu: "← Главное меню"
+  accountsMenu: "← Аккаунты"
+  yes: "✅ Да"
+  no: "❌ Нет"
+  cancel: "❌ Отмена"
+  notFound: "Аккаунт не найден."
+  notTextMessage: "Ожидалось текстовое сообщение. Операция отменена."
+  categoryBS: "БС"
+  categoryRegular: "Обычные"
+
+# --- Доступ ---
+access:
+  denied: "Доступ запрещён."
+
+# --- Главное меню ---
+menu:
+  main:
+    title: "<b>Главное меню</b>"
+    accounts: "👥 Аккаунты"
+    addAccount: "➕ Добавить аккаунт"
+    addKeywords: "🔑 Добавить ключи"
+    addTemplates: "📨 Добавить рассылку"
+    stats: "📊 Статистика"
+    logs: "📋 Логи"
+    limits: "⚙️ Настройки лимитов"
+    checkStatuses: "🔄 Обновить статусы аккаунтов"
+
+# --- Меню аккаунтов ---
+  accounts:
+    empty: "Аккаунтов нет."
+    btnStop: "⏹ Стоп %phone%"
+    btnStart: "▶️ Старт %phone%"
+    btnCheck: "🔍 Проверить"
+    btnDelete: "🗑 Удалить"
+    deleteConfirm: "Удалить аккаунт %phone%? Это действие необратимо."
+    deleteYes: "✅ Да, удалить"
+    checkStarted: "Проверяем..."
+    checkDone: "✅ Проверка завершена.\nСтатус: %status%\nPremium: %premium%%reason%"
+    checkReasonSuffix: "\nПричина: %reason%"
+
+# --- Меню логов ---
+  logs:
+    hint: "<b>Логи</b>\n\nНажмите кнопку — бот пришлёт файл <code>.txt</code> с записями."
+    empty: "Логов нет."
+    fileCaption: "Логи (%filter%)"
+    filterError: "🔴 Только ошибки"
+    filterWarn: "🟡 Предупреждения"
+    filterAll: "📋 Все логи"
+
+# --- Проверка статусов (кнопка «Обновить статусы») ---
+statusCheck:
+  starting: "Запускаем проверку..."
+  report: "<b>Проверка завершена.</b>\n\nВсего аккаунтов: %total%\nАктивны: %active%\nSpamBlock: %spamBlock%\nFloodWait: %floodWait%\nОшибка авторизации: %authError%\nPremium: %premium%"
+
+# --- Отображение статусов, ролей, категорий ---
+accountStatus:
+  ACTIVE: "Активен"
+  STOPPED: "Остановлен"
+  SPAM_BLOCK: "Спам-блок"
+  FLOOD_WAIT: "FloodWait"
+  AUTH_ERROR: "Ошибка авторизации"
+  BANNED: "Заблокирован"
+  NEEDS_CHECK: "Требует проверки"
+
+accountRole:
+  PARSER: "Парсер"
+  SENDER: "Рассыльщик"
+
+accountCategory:
+  BS: "БС"
+  REGULAR: "Обычные"
+
+postStatus:
+  PENDING: "0"
+  PROCESSING: "В обработке"
+  SUCCESS: "1"
+  ERROR: "2"
+
+# --- Карточка аккаунта ---
+accountCard: "<b>%phone%</b>\nТип: %role%\nКатегория: %category%\nСтатус: %status%\nTelegram Premium: %premium%\nОтправлено сегодня: %sentToday%\nОшибок сегодня: %errorsToday%\nПоследняя активность: %lastActivity%"
+
+# --- Статистика ---
+stats:
+  format: "<b>Статистика</b>\n\nПарсеров: %parsers%\nРассыльщиков: %senders%\nPremium аккаунтов: %premiumAccounts%\nSpamBlock: %spamBlockAccounts%\n\nНайдено постов: %totalPosts%\nОжидают отправки: %pendingPosts%\nУспешно отправлено: %successPosts%\nОшибок: %errorPosts%\n\nОтправок за сутки: %sentToday%\nОтправок за неделю: %sentThisWeek%\nОтправок за месяц: %sentThisMonth%"
+
+# --- Лимиты ---
+limits:
+  format: "<b>Текущие лимиты (по умолчанию)</b>\n\nЛимит в час: %hourlyLimit%\nЛимит в сутки: %dailyLimit%\nМин. задержка: %minDelaySeconds%с\nМакс. задержка: %maxDelaySeconds%с"
+
+# --- Уведомления администраторам ---
+notifications:
+  restriction: "<b>Аккаунт %phone% получил ограничение Telegram.</b>\nПричина: %reason%\nАккаунт остановлен и исключён из рассылки."
+
+# --- Диалог: добавление аккаунта ---
+conversations:
+  addAccount:
+    roleParser: "🔍 Парсер"
+    roleSender: "📨 Рассыльщик"
+    step1: "Шаг 1/6: Выберите роль аккаунта."
+    step2: "Шаг 2/6: Выберите категорию аккаунта."
+    step3: "Шаг 3/6: Введите API ID (число):"
+    step4: "Шаг 4/6: Введите API Hash:"
+    chooseAuth: "Шаг 5/6: Как войти в аккаунт?\n\n<b>QR</b> — рекомендуется, если код из бота не приходит.\n<b>Телефон</b> — код 5 цифр (только от запроса бота, не из браузера)."
+    authByPhone: "📱 По коду на телефон"
+    authByQr: "📷 По QR (рекомендуется)"
+    step5: "Шаг 6/6: Введите номер телефона (формат: +79990000000):"
+    qrStarting: "⏳ Генерируем QR для входа..."
+    qrScan: "Отсканируйте QR в Telegram на телефоне:\n<b>Настройки → Устройства → Подключить устройство</b>\n\nQR обновляется каждые ~30 сек. Не входите в web.telegram.org параллельно."
+    qrLink: "Или откройте ссылку на телефоне:\n<code>%url%</code>"
+    qrWaiting: "⏳ Ожидаем сканирование..."
+    qrError: "Ошибка QR-входа: %error%"
+    qrTimeout: "Время ожидания QR истекло. Начните добавление аккаунта заново."
+    codeWrongSession: "❌ Код не подходит.\n\nВы ввели код <b>не от этого запроса бота</b> (например из web.telegram.org). Каждый вход создаёт свой код.\n\nЗапросите код снова через бота и введите <b>только его</b>, либо выберите вход по QR."
+    sendingCode: "⏳ Отправляем код подтверждения..."
+    codeSentApp: "✅ Запрос принят Telegram.\n\nКод приходит <b>в приложение Telegram</b> на этом номере — откройте чат <b>«Telegram»</b> (служебные сообщения). Это <b>не SMS</b>.\n\nДля многих номеров SMS через API недоступен — кнопка ниже может не сработать (ошибка SEND_CODE_UNAVAILABLE)."
+    codeSmsUnavailable: "⚠️ <b>SMS недоступен</b> (SEND_CODE_UNAVAILABLE).\n\nTelegram для этого номера разрешает только доставку в приложение. Код уже был запрошен — ищите в чате <b>«Telegram»</b> на телефоне с этим номером.\n\nЕсли чат пуст: выйдите и зайдите в Telegram на телефоне, проверьте Архив, подождите 2–3 мин и запросите код заново (без --sms)."
+    codeSentSms: "✅ Код отправлен по <b>SMS</b> или звонком на номер %phone%.\n\nПроверьте сообщения и входящие звонки."
+    codeDeliveryHint: "💡 <b>Куда смотреть:</b> %hint%"
+    codeDeliverySummary: "📋 <b>Ответ Telegram:</b> <code>%summary%</code>"
+    codeResentSms: "📨 Повторная отправка: код должен прийти по SMS на %phone%."
+    resendSms: "📨 Не пришло — отправить SMS"
+    enterCode: "Введите код подтверждения (5 цифр):"
+    enter2fa: "Требуется пароль 2FA%hint%. Введите пароль:"
+    twoFaHintSuffix: " (подсказка: %hint%)"
+    checkingAccount: "⏳ Проверяем аккаунт..."
+    restricted: "⚠️ Аккаунт имеет ограничения: %reason%.\nАккаунт будет добавлен со статусом NEEDS_CHECK."
+    invalidApiId: "Неверный API ID. Операция отменена."
+    invalidApiHash: "Неверный API Hash. Операция отменена."
+    invalidPhone: "Неверный формат номера. Операция отменена."
+    codeRequestError: "Ошибка при запросе кода: %error%"
+    signInError: "Ошибка при авторизации: %error%"
+    passwordError: "Ошибка при вводе пароля 2FA: %error%"
+    healthError: "Ошибка при проверке аккаунта: %error%. Аккаунт не сохранён."
+    success: "✅ <b>Аккаунт успешно добавлен.</b>\n\nТелефон: %phone%\nТип: %role%\nКатегория: %category%\nPremium: %premium%\nСтатус: %status%"
+    premiumYes: "Да"
+    premiumNo: "Нет"
+
+# --- Диалог: ключевые слова ---
+  addKeywords:
+    selectCategory: "Выберите категорию ключевых слов:"
+    listHeader: "<b>Ключевые слова [%category%]:</b>\n\n%list%\n\nОтправьте новые ключевые слова (каждое с новой строки) или нажмите кнопку:"
+    emptyList: "Ключевых слов нет."
+    deleteBtn: "🗑 Удалить"
+    addResult: "Добавлено ключей: %added%\nДубликатов пропущено: %duplicates%"
+    deleteListHeader: "<b>Текущие ключевые слова:</b>\n\n%list%\n\nОтправьте ключевые слова для удаления (каждое с новой строки):"
+    deleteResult: "Удалено ключей: %deleted%\nНе найдено: %notFound%"
+
+# --- Диалог: шаблоны ---
+  addTemplates:
+    selectCategory: "Выберите категорию шаблонов:"
+    listHeader: "<b>Шаблоны [%category%]:</b>\n\n%list%\n\nОтправьте новый шаблон или нажмите кнопку:"
+    emptyList: "Шаблонов нет."
+    deleteBtn: "🗑 Удалить"
+    saved: "Новый шаблон записан в базу. Хотите добавить ещё один?"
+    addMoreYes: "✅ Да"
+    addMoreNo: "❌ Нет"
+    deleteListHeader: "<b>Шаблоны для удаления:</b>\n\n%list%\n\nОтправьте номера или тексты шаблонов для удаления (каждый с новой строки):"
+    deleteResult: "Удалено шаблонов: %deleted%"
+
+# --- Диалог: лимиты ---
+  limits:
+    changePrompt: "Хотите изменить лимиты?"
+    editBtn: "✏️ Изменить"
+    editPrompt: "Введите новые значения через пробел в формате:\n<code>hourlyLimit dailyLimit minDelaySeconds maxDelaySeconds</code>\n\nПример: <code>20 100 30 120</code>\n\nТекущие: %current%"
+    invalidFormat: "Неверный формат. Ожидается 4 числа через пробел. Операция отменена."
+    invalidNumbers: "Все значения должны быть числами. Операция отменена."
+    invalidDelay: "Мин. задержка не может быть больше макс. задержки. Операция отменена."
+    updated: "✅ Лимиты обновлены.\n\n%limits%"

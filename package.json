@@ -1,0 +1,46 @@
+{
+  "name": "nvpn-comment-service",
+  "version": "1.0.0",
+  "description": "Telegram automation system: admin bot + MTProto parser/sender",
+  "type": "module",
+  "main": "dist/app/index.js",
+  "scripts": {
+    "dev": "tsx watch src/app/index.ts",
+    "dev:workers": "concurrently -n parser,sender,retry,status \"npm run worker:parser\" \"npm run worker:sender\" \"npm run worker:retry\" \"npm run worker:status\"",
+    "build": "tsc",
+    "start": "node dist/app/index.js",
+    "start:workers": "concurrently -n parser,sender,retry,status \"node dist/workers/parser.worker.js\" \"node dist/workers/sender.worker.js\" \"node dist/workers/retry.worker.js\" \"node dist/workers/status.worker.js\"",
+    "worker:parser": "tsx watch src/workers/parser.worker.ts",
+    "worker:sender": "tsx watch src/workers/sender.worker.ts",
+    "worker:retry": "tsx watch src/workers/retry.worker.ts",
+    "worker:status": "tsx watch src/workers/status.worker.ts",
+    "debug:auth-code": "tsx scripts/debug-send-code.ts"
+  },
+  "dependencies": {
+    "@grammyjs/conversations": "^2.0.1",
+    "big-integer": "^1.6.52",
+    "bullmq": "^5.53.0",
+    "dotenv": "^16.6.1",
+    "drizzle-orm": "^0.36.0",
+    "grammy": "^1.31.0",
+    "js-yaml": "^4.1.1",
+    "pino": "^9.6.0",
+    "pino-pretty": "^13.0.0",
+    "postgres": "^3.4.5",
+    "qrcode": "^1.5.4",
+    "socks-proxy-agent": "^8.0.5",
+    "telegram": "npm:teleproto@1.221.0",
+    "zod": "^3.24.4"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^22.15.21",
+    "@types/qrcode": "^1.5.5",
+    "concurrently": "^9.1.2",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
