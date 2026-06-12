@@ -68,6 +68,8 @@ export interface Lang {
   };
   limits: {
     format: string;
+    formatParser: string;
+    formatStatus: string;
   };
   notifications: {
     restriction: string;

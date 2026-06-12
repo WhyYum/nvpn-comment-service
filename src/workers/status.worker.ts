@@ -9,6 +9,7 @@ import { formatAccountStatus } from '../utils/formatters.js';
 import { logger } from '../core/logger.js';
 import { delay } from '../utils/delay.js';
 import { bootstrapApp } from '../app/bootstrap.js';
+import { getDefaultStatusSettings } from '../services/status-settings.service.js';
 import type { Env } from '../config/env.js';
 
 interface StatusReport {
@@ -121,8 +122,8 @@ async function runStatusCheck(env: Env): Promise<void> {
 }
 
 async function startStatusWorker(env: Env): Promise<void> {
-  const statusIntervalMs = env.STATUS_CHECK_INTERVAL_SECONDS * 1000;
-  logger.info({ interval: env.STATUS_CHECK_INTERVAL_SECONDS }, 'Status worker starting');
+  const initialSettings = await getDefaultStatusSettings();
+  logger.info({ interval: initialSettings.intervalSeconds }, 'Status worker starting');
 
   while (true) {
     try {
@@ -130,7 +131,9 @@ async function startStatusWorker(env: Env): Promise<void> {
     } catch (err) {
       logger.error({ err }, 'Status check cycle failed');
     }
-    await delay(statusIntervalMs);
+
+    const settings = await getDefaultStatusSettings();
+    await delay(settings.intervalSeconds * 1000);
   }
 }
 

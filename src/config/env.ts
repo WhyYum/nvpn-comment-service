@@ -11,9 +11,6 @@ const envSchema = z.object({
   REDIS_URL: z.string().min(1, 'REDIS_URL is required'),
   ENCRYPTION_KEY: z.string().min(32, 'ENCRYPTION_KEY must be at least 32 characters'),
 
-  PARSER_INTERVAL_SECONDS: z.coerce.number().positive().default(300),
-  STATUS_CHECK_INTERVAL_SECONDS: z.coerce.number().positive().default(3600),
-
   TELEGRAM_PROXY_ENABLED: z
     .string()
     .optional()

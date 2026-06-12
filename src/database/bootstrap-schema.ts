@@ -20,7 +20,45 @@ const TABLE_DEFINITIONS: Array<{ name: string; sql: string }> = [
         added_at TIMESTAMPTZ NOT NULL DEFAULT now(),
         last_activity_at TIMESTAMPTZ,
         sent_total INTEGER NOT NULL DEFAULT 0,
-        errors_total INTEGER NOT NULL DEFAULT 0
+        errors_total INTEGER NOT NULL DEFAULT 0,
+        parser_requests_today INTEGER NOT NULL DEFAULT 0,
+        parser_requests_date TIMESTAMPTZ
+      )
+    `,
+  },
+  {
+    name: 'parser_settings',
+    sql: `
+      CREATE TABLE IF NOT EXISTS parser_settings (
+        id TEXT PRIMARY KEY,
+        interval_seconds INTEGER NOT NULL,
+        daily_request_limit INTEGER NOT NULL,
+        posts_per_keyword_limit INTEGER NOT NULL,
+        is_default BOOLEAN NOT NULL DEFAULT false,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+      )
+    `,
+  },
+  {
+    name: 'status_settings',
+    sql: `
+      CREATE TABLE IF NOT EXISTS status_settings (
+        id TEXT PRIMARY KEY,
+        interval_seconds INTEGER NOT NULL,
+        is_default BOOLEAN NOT NULL DEFAULT false,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+      )
+    `,
+  },
+  {
+    name: 'parser_scheduler',
+    sql: `
+      CREATE TABLE IF NOT EXISTS parser_scheduler (
+        id TEXT PRIMARY KEY,
+        category VARCHAR(32) NOT NULL DEFAULT 'BS',
+        keyword_index INTEGER NOT NULL DEFAULT 0
       )
     `,
   },
@@ -116,6 +154,44 @@ const INDEX_DEFINITIONS: Array<{ sql: string }> = [
   { sql: 'CREATE UNIQUE INDEX IF NOT EXISTS keywords_category_text_idx ON keywords (category, text)' },
 ];
 
+const COLUMN_MIGRATIONS: Array<{ table: string; column: string; definition: string }> = [
+  {
+    table: 'telegram_accounts',
+    column: 'parser_requests_today',
+    definition: 'INTEGER NOT NULL DEFAULT 0',
+  },
+  {
+    table: 'telegram_accounts',
+    column: 'parser_requests_date',
+    definition: 'TIMESTAMPTZ',
+  },
+];
+
+async function columnExists(
+  sql: postgres.Sql,
+  table: string,
+  column: string,
+): Promise<boolean> {
+  const result = await sql`
+    SELECT column_name FROM information_schema.columns
+    WHERE table_name = ${table} AND column_name = ${column}
+  `;
+  return result.length > 0;
+}
+
+async function addColumnIfMissing(
+  sql: postgres.Sql,
+  table: string,
+  column: string,
+  definition: string,
+): Promise<void> {
+  const exists = await columnExists(sql, table, column);
+  if (!exists) {
+    await sql.unsafe(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
+    logger.info({ table, column }, 'Added missing column');
+  }
+}
+
 export async function bootstrapSchema(env: Env): Promise<void> {
   const sql = postgres(env.DATABASE_URL, { max: 1, onnotice: () => {} });
 
@@ -128,6 +204,16 @@ export async function bootstrapSchema(env: Env): Promise<void> {
     for (const { sql: indexSql } of INDEX_DEFINITIONS) {
       await sql.unsafe(indexSql);
     }
+
+    for (const { table, column, definition } of COLUMN_MIGRATIONS) {
+      await addColumnIfMissing(sql, table, column, definition);
+    }
+
+    await sql.unsafe(`
+      INSERT INTO parser_scheduler (id, category, keyword_index)
+      VALUES ('main', 'BS', 0)
+      ON CONFLICT (id) DO NOTHING
+    `);
 
     logger.info('Database schema bootstrap completed');
   } finally {

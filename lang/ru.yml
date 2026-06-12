@@ -93,7 +93,9 @@ stats:
 
 # --- Лимиты ---
 limits:
-  format: "<b>Текущие лимиты (по умолчанию)</b>\n\nЛимит в час: %hourlyLimit%\nЛимит в сутки: %dailyLimit%\nМин. задержка: %minDelaySeconds%с\nМакс. задержка: %maxDelaySeconds%с"
+  format: "<b>Лимиты рассылки</b>\n\nЛимит в час: %hourlyLimit%\nЛимит в сутки: %dailyLimit%\nМин. задержка: %minDelaySeconds%с\nМакс. задержка: %maxDelaySeconds%с"
+  formatParser: "<b>Настройки парсера</b>\n\nИнтервал между фразами: %intervalSeconds%с\nЗапросов в день на аккаунт: %dailyRequestLimit%\nПостов на запрос: %postsPerKeywordLimit%"
+  formatStatus: "<b>Проверка статусов</b>\n\nИнтервал между циклами: %intervalSeconds%с"
 
 # --- Уведомления администраторам ---
 notifications:
@@ -167,10 +169,18 @@ conversations:
 
 # --- Диалог: лимиты ---
   limits:
-    changePrompt: "Хотите изменить лимиты?"
+    changePrompt: "Выберите, что изменить:"
+    editSenderBtn: "✏️ Лимиты рассылки"
+    editParserBtn: "✏️ Настройки парсера"
+    editStatusBtn: "✏️ Проверка статусов"
     editBtn: "✏️ Изменить"
     editPrompt: "Введите новые значения через пробел в формате:\n<code>hourlyLimit dailyLimit minDelaySeconds maxDelaySeconds</code>\n\nПример: <code>20 100 30 120</code>\n\nТекущие: %current%"
+    editParserPrompt: "Введите новые значения через пробел в формате:\n<code>intervalSeconds dailyRequestLimit postsPerKeywordLimit</code>\n\nПример: <code>4500 10 250</code>\n\nТекущие: %current%"
+    editStatusPrompt: "Введите интервал между циклами проверки статусов (в секундах).\n\nПример: <code>3600</code>\n\nТекущий: %current%"
     invalidFormat: "Неверный формат. Ожидается 4 числа через пробел. Операция отменена."
-    invalidNumbers: "Все значения должны быть числами. Операция отменена."
+    invalidParserFormat: "Неверный формат. Ожидается 3 числа через пробел. Операция отменена."
+    invalidNumbers: "Все значения должны быть положительными числами. Операция отменена."
     invalidDelay: "Мин. задержка не может быть больше макс. задержки. Операция отменена."
-    updated: "✅ Лимиты обновлены.\n\n%limits%"
+    updated: "✅ Лимиты рассылки обновлены.\n\n%limits%"
+    parserUpdated: "✅ Настройки парсера обновлены.\n\n%settings%"
+    statusUpdated: "✅ Интервал проверки статусов обновлён.\n\n%settings%"

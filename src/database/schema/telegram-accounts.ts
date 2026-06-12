@@ -15,4 +15,6 @@ export const telegramAccounts = pgTable('telegram_accounts', {
   lastActivityAt: timestamp('last_activity_at', { withTimezone: true }),
   sentTotal: integer('sent_total').notNull().default(0),
   errorsTotal: integer('errors_total').notNull().default(0),
+  parserRequestsToday: integer('parser_requests_today').notNull().default(0),
+  parserRequestsDate: timestamp('parser_requests_date', { withTimezone: true }),
 });

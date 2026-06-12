@@ -32,6 +32,8 @@ import { checkAccountStatus } from '../mtproto/status.service.js';
 import { writeLog } from '../services/logs.service.js';
 import { logger } from '../core/logger.js';
 import { ensureDefaultLimitsExist } from '../services/limits.service.js';
+import { ensureDefaultParserSettingsExist } from '../services/parser-settings.service.js';
+import { ensureDefaultStatusSettingsExist } from '../services/status-settings.service.js';
 import { formatAccountStatus } from '../utils/formatters.js';
 import { AccountStatus, LogLevel, type AccountStatus as AccountStatusType } from '../database/types.js';
 
@@ -324,6 +326,8 @@ export function buildBot(env: Env) {
 
 export async function startBot(env: Env) {
   await ensureDefaultLimitsExist();
+  await ensureDefaultParserSettingsExist();
+  await ensureDefaultStatusSettingsExist();
   const bot = buildBot(env);
   logger.info('Bot starting...');
   await bot.start({
