@@ -2,6 +2,8 @@ x-worker-common: &worker-common
   build: .
   restart: unless-stopped
   env_file: .env
+  networks:
+    - nationvpn-network
   depends_on:
     nvpn-redis:
       condition: service_healthy
@@ -10,9 +12,12 @@ x-worker-common: &worker-common
 services:
   nvpn-redis:
     image: redis:7-alpine
+    container_name: nvpn-redis
     restart: unless-stopped
     ports:
       - '6379:6379'
+    networks:
+      - nationvpn-network
     healthcheck:
       test: ['CMD', 'redis-cli', 'ping']
       interval: 10s
@@ -21,25 +26,37 @@ services:
 
   nvpn-comment-service:
     build: .
+    container_name: nvpn-comment-service
     restart: unless-stopped
+    networks:
+      - nationvpn-network
     env_file: .env
     depends_on:
       nvpn-redis:
         condition: service_healthy
 
   worker-parser:
+    container_name: nvpn-comment-worker-parser
     <<: *worker-common
     command: ['dist/workers/parser.worker.js']
 
   worker-sender:
+    container_name: nvpn-comment-worker-sender
     <<: *worker-common
     command: ['dist/workers/sender.worker.js']
 
   worker-retry:
+    container_name: nvpn-comment-worker-retry
     <<: *worker-common
     command: ['dist/workers/retry.worker.js']
 
   worker-status:
+    container_name: nvpn-comment-worker-status
     <<: *worker-common
     command: ['dist/workers/status.worker.js']
 
+networks:
+  nationvpn-network:
+    name: nationvpn-network
+    driver: bridge
+    external: true

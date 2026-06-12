@@ -79,6 +79,7 @@ async function runAddAccountFlow(
 
   await ctx.reply(l.step3);
   const apiIdMsg = await conversation.waitFor('message:text');
+  await deleteSensitiveUserMessage(conversation, apiIdMsg);
   const apiId = parseInt(apiIdMsg.message.text.trim(), 10);
   if (isNaN(apiId)) {
     await ctx.reply(l.invalidApiId);
@@ -87,6 +88,7 @@ async function runAddAccountFlow(
 
   await ctx.reply(l.step4);
   const apiHashMsg = await conversation.waitFor('message:text');
+  await deleteSensitiveUserMessage(conversation, apiHashMsg);
   const apiHash = apiHashMsg.message.text.trim();
   if (!apiHash || apiHash.length < 10) {
     await ctx.reply(l.invalidApiHash);
@@ -176,6 +178,7 @@ async function runPhoneAuthFlow(
 ): Promise<boolean> {
   await ctx.reply(l.step5);
   const phoneMsg = await conversation.waitFor('message:text');
+  await deleteSensitiveUserMessage(conversation, phoneMsg);
   const phone = phoneMsg.message.text.trim();
   if (!phone.startsWith('+')) {
     await ctx.reply(l.invalidPhone);
@@ -245,6 +248,7 @@ async function runPhoneAuthFlow(
         : '';
       await ctx.reply(t(l.enter2fa, { hint }));
       const pwMsg = await conversation.waitFor('message:text');
+      await deleteSensitiveUserMessage(conversation, pwMsg);
       await conversation.external(() =>
         signInAuthSessionPassword(userId, pwMsg.message.text.trim()),
       );
@@ -309,6 +313,7 @@ async function runQrAuthFlow(
         : '';
       await ctx.reply(t(l.enter2fa, { hint }));
       const pwMsg = await conversation.waitFor('message:text');
+      await deleteSensitiveUserMessage(conversation, pwMsg);
       try {
         await conversation.external(() =>
           submitQrAuthPassword(userId, pwMsg.message.text.trim()),
@@ -384,6 +389,7 @@ async function waitForAuthCode(
 
     const text = update.message?.text?.trim();
     if (text) {
+      await deleteSensitiveUserMessage(conversation, update);
       return text;
     }
 
@@ -396,4 +402,21 @@ function escapeHtml(text: string): string {
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
+}
+
+async function deleteSensitiveUserMessage(
+  conversation: BotConversation,
+  msgCtx: InsideCtx,
+): Promise<void> {
+  const chatId = msgCtx.chat?.id;
+  const messageId = msgCtx.message?.message_id;
+  if (!chatId || !messageId) return;
+
+  await conversation.external(async () => {
+    try {
+      await msgCtx.api.deleteMessage(chatId, messageId);
+    } catch {
+      // Сообщение уже удалено, слишком старое или нет прав у бота
+    }
+  });
 }
