@@ -79,8 +79,8 @@ async function runAddAccountFlow(
 
   await ctx.reply(l.step3);
   const apiIdMsg = await conversation.waitFor('message:text');
-  await deleteSensitiveUserMessage(conversation, apiIdMsg);
   const apiId = parseInt(apiIdMsg.message.text.trim(), 10);
+  await deleteSensitiveUserMessage(apiIdMsg);
   if (isNaN(apiId)) {
     await ctx.reply(l.invalidApiId);
     return;
@@ -88,14 +88,14 @@ async function runAddAccountFlow(
 
   await ctx.reply(l.step4);
   const apiHashMsg = await conversation.waitFor('message:text');
-  await deleteSensitiveUserMessage(conversation, apiHashMsg);
   const apiHash = apiHashMsg.message.text.trim();
+  await deleteSensitiveUserMessage(apiHashMsg);
   if (!apiHash || apiHash.length < 10) {
     await ctx.reply(l.invalidApiHash);
     return;
   }
 
-  await ctx.reply(l.chooseAuth, {
+  await apiHashMsg.reply(l.chooseAuth, {
     parse_mode: 'HTML',
     reply_markup: new InlineKeyboard()
       .text(l.authByQr, 'auth:qr')
@@ -178,8 +178,8 @@ async function runPhoneAuthFlow(
 ): Promise<boolean> {
   await ctx.reply(l.step5);
   const phoneMsg = await conversation.waitFor('message:text');
-  await deleteSensitiveUserMessage(conversation, phoneMsg);
   const phone = phoneMsg.message.text.trim();
+  await deleteSensitiveUserMessage(phoneMsg);
   if (!phone.startsWith('+')) {
     await ctx.reply(l.invalidPhone);
     return false;
@@ -248,9 +248,10 @@ async function runPhoneAuthFlow(
         : '';
       await ctx.reply(t(l.enter2fa, { hint }));
       const pwMsg = await conversation.waitFor('message:text');
-      await deleteSensitiveUserMessage(conversation, pwMsg);
+      const password = pwMsg.message.text.trim();
+      await deleteSensitiveUserMessage(pwMsg);
       await conversation.external(() =>
-        signInAuthSessionPassword(userId, pwMsg.message.text.trim()),
+        signInAuthSessionPassword(userId, password),
       );
     }
     return true;
@@ -313,10 +314,11 @@ async function runQrAuthFlow(
         : '';
       await ctx.reply(t(l.enter2fa, { hint }));
       const pwMsg = await conversation.waitFor('message:text');
-      await deleteSensitiveUserMessage(conversation, pwMsg);
+      const password = pwMsg.message.text.trim();
+      await deleteSensitiveUserMessage(pwMsg);
       try {
         await conversation.external(() =>
-          submitQrAuthPassword(userId, pwMsg.message.text.trim()),
+          submitQrAuthPassword(userId, password),
         );
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
@@ -389,7 +391,7 @@ async function waitForAuthCode(
 
     const text = update.message?.text?.trim();
     if (text) {
-      await deleteSensitiveUserMessage(conversation, update);
+      await deleteSensitiveUserMessage(update);
       return text;
     }
 
@@ -404,19 +406,10 @@ function escapeHtml(text: string): string {
     .replace(/>/g, '&gt;');
 }
 
-async function deleteSensitiveUserMessage(
-  conversation: BotConversation,
-  msgCtx: InsideCtx,
-): Promise<void> {
-  const chatId = msgCtx.chat?.id;
-  const messageId = msgCtx.message?.message_id;
-  if (!chatId || !messageId) return;
-
-  await conversation.external(async () => {
-    try {
-      await msgCtx.api.deleteMessage(chatId, messageId);
-    } catch {
-      // Сообщение уже удалено, слишком старое или нет прав у бота
-    }
-  });
+async function deleteSensitiveUserMessage(msgCtx: InsideCtx): Promise<void> {
+  try {
+    await msgCtx.deleteMessage();
+  } catch {
+    // Сообщение уже удалено, слишком старое или нет прав у бота
+  }
 }
